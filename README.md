@@ -27,4 +27,4 @@ firebase deploy --only hosting
 ## ملاحظات
 
 - الطقس من Open-Meteo (بدون مفتاح API)، والخرائط من Leaflet + Esri.
-- الحجوزات تُحفظ حالياً في `localStorage` للمتصفح.
+- الحجوزات (bookings) تُحفظ في Cloud Firestore 
