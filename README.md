@@ -21,10 +21,9 @@ firebase deploy --only hosting
 ## Firebase
 
 - **Firebase Hosting**: الموقع منشور على https://darb-efdb5.web.app
-- **Cloud Firestore**: تُحفظ فيه المجموعات (`groups`) وتقييمات الزوار والتعليقات (`reviews`) وطلبات الانضمام (`joinRequests`)، وتظهر لكل المستخدمين من أي جهاز.
+- **Cloud Firestore**: تُحفظ فيه المجموعات (`groups`) وتقييمات الزوار والتعليقات (`reviews`) وطلبات الانضمام (`joinRequests`) وحجوزات الرحلات (`bookings`)، وتظهر لكل المستخدمين من أي جهاز.
 - الإعداد في `public/firebase.js`.
 
 ## ملاحظات
 
 - الطقس من Open-Meteo (بدون مفتاح API)، والخرائط من Leaflet + Esri.
-- الحجوزات (bookings) تُحفظ في Cloud Firestore 
