@@ -33,65 +33,125 @@
 </main>
 <div id="toast" role="status"></div>
 
-<script>
-const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
-const set=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
-const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2400)}
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, addDoc, setDoc, doc, updateDoc, arrayUnion, onSnapshot, query, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-let reviews=JSON.parse(get('reviews')||'null')||[
- {id:1,name:'ليلى',place:'وادي رم',rate:5,text:'ليلة تخييم لا تُنسى. السماء صافية والدليل البدوي كان رائعاً.',imgs:[],yt:'',vid:'',time:Date.now()-864e5*3,cmts:[{name:'سامر',text:'أي مخيم نصحتِ به؟'}]},
- {id:2,name:'أحمد',place:'البتراء',rate:4,text:'يفضّل الوصول قبل الثامنة صباحاً لتفادي الازدحام والحر.',imgs:[],yt:'',vid:'',time:Date.now()-864e5,cmts:[]}
-];
-let rate=0, imgs=[], vidUrl='';
-const save=()=>{ if(!set('reviews',JSON.stringify(reviews))) toast('امتلأت مساحة التخزين، لم تُحفظ الصور'); };
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400); }
 
-const stars=document.getElementById('stars');
-stars.innerHTML=[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}" aria-label="${n} من 5">★</button>`).join('');
-stars.onclick=e=>{const b=e.target.closest('button');if(!b)return;rate=+b.dataset.n;[...stars.children].forEach((x,i)=>x.classList.toggle('on',i<rate))};
+let reviews = [];
+let rate = 0, imgs = [], vidUrl = '';
+const sessionVids = {}; // الفيديو المحلي يظهر لصاحبه في هذه الجلسة فقط
 
-function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,700/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.7))};im.src=r.result};r.readAsDataURL(file)})}
-document.getElementById('fImg').onchange=async e=>{
-  imgs=[];for(const f of [...e.target.files].slice(0,3)) imgs.push(await shrink(f));
-  document.getElementById('prev').innerHTML=imgs.map(s=>`<img src="${s}" alt="معاينة">`).join('')};
-document.getElementById('fVid').onchange=e=>{const f=e.target.files[0];if(!f)return;
-  if(f.size>30*1048576){toast('حجم الفيديو أكبر من 30 ميغابايت');e.target.value='';return}
-  vidUrl=URL.createObjectURL(f)};
+/* ---- النجوم ---- */
+const stars = $('stars');
+stars.innerHTML = [1,2,3,4,5].map(n => `<button type="button" data-n="${n}" aria-label="${n} من 5">★</button>`).join('');
+stars.onclick = e => { const b = e.target.closest('button'); if (!b) return; rate = +b.dataset.n; [...stars.children].forEach((x, i) => x.classList.toggle('on', i < rate)); };
 
-function ytId(u){const m=u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);return m?m[1]:''}
-function when(t){const d=Math.floor((Date.now()-t)/864e5);return d<1?'اليوم':d===1?'أمس':`قبل ${d} أيام`}
+/* ---- تصغير الصور ---- */
+function shrink(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const s = Math.min(1, 600 / Math.max(im.width, im.height));
+        const c = document.createElement('canvas');
+        c.width = im.width * s; c.height = im.height * s;
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        res(c.toDataURL('image/jpeg', .6));
+      };
+      im.src = r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+$('fImg').onchange = async e => {
+  imgs = [];
+  for (const f of [...e.target.files].slice(0, 3)) imgs.push(await shrink(f));
+  $('prev').innerHTML = imgs.map(s => `<img src="${s}" alt="معاينة">`).join('');
+};
+$('fVid').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  if (f.size > 30 * 1048576) { toast('حجم الفيديو أكبر من 30 ميغابايت'); e.target.value = ''; return; }
+  vidUrl = URL.createObjectURL(f);
+};
 
-function render(){
-  document.getElementById('list').innerHTML=reviews.map(r=>{
-    const media=[...r.imgs.map(s=>`<img src="${s}" alt="صورة من ${esc(r.name)}" loading="lazy">`),
-      r.yt?`<iframe src="https://www.youtube-nocookie.com/embed/${r.yt}" title="فيديو" allowfullscreen loading="lazy"></iframe>`:'',
-      r.vid?`<video src="${r.vid}" controls preload="metadata"></video>`:''].join('');
-    return `<article class="card review" data-id="${r.id}">
-      <div class="rhead"><b>${esc(r.name)} — ${esc(r.place)}</b><span class="rate" aria-label="${r.rate} من 5">${'★'.repeat(r.rate)}${'☆'.repeat(5-r.rate)}</span></div>
-      <div class="time">${when(r.time)}</div>
+function ytId(u) { const m = u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ''; }
+function when(t) { const d = Math.floor((Date.now() - t) / 864e5); return d < 1 ? 'اليوم' : d === 1 ? 'أمس' : `قبل ${d} أيام`; }
+
+/* ---- العرض ---- */
+function render() {
+  $('list').innerHTML = reviews.map(r => {
+    const imgList = r.imgs || [], cmts = r.cmts || [];
+    const vid = sessionVids[r.id] || '';
+    const media = [
+      ...imgList.map(s => `<img src="${s}" alt="صورة من ${esc(r.name)}" loading="lazy">`),
+      r.yt ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(r.yt)}" title="فيديو" allowfullscreen loading="lazy"></iframe>` : '',
+      vid ? `<video src="${vid}" controls preload="metadata"></video>` : ''
+    ].join('');
+    const t = r.createdAt && r.createdAt.toMillis ? r.createdAt.toMillis() : Date.now();
+    return `<article class="card review" data-id="${esc(r.id)}">
+      <div class="rhead"><b>${esc(r.name)} — ${esc(r.place)}</b><span class="rate" aria-label="${r.rate} من 5">${'★'.repeat(r.rate)}${'☆'.repeat(5 - r.rate)}</span></div>
+      <div class="time">${when(t)}</div>
       <p>${esc(r.text)}</p>
-      ${media?`<div class="media">${media}</div>`:''}
-      <div class="cmts">${r.cmts.map(c=>`<div class="cmt"><b>${esc(c.name)}:</b> ${esc(c.text)}</div>`).join('')}
+      ${media ? `<div class="media">${media}</div>` : ''}
+      <div class="cmts">${cmts.map(c => `<div class="cmt"><b>${esc(c.name)}:</b> ${esc(c.text)}</div>`).join('')}
         <div class="cform"><input class="cn" placeholder="اسمك" maxlength="30" aria-label="اسمك"><input class="ct" placeholder="اكتب تعليقاً" maxlength="200" aria-label="تعليق"><button type="button" class="btn small" data-c>تعليق</button></div>
-      </div></article>`}).join('')}
+      </div></article>`;
+  }).join('') || '<p class="empty">لا توجد تقييمات بعد. كن أول من يشارك تجربته!</p>';
+}
 
-document.getElementById('post').onclick=()=>{
-  const name=fName.value.trim(),text=fText.value.trim();
-  if(!name||!text||!rate){toast('أدخل الاسم والتقييم ونص التجربة');return}
-  const yt=ytId(fYt.value);
-  if(fYt.value&&!yt){toast('رابط يوتيوب غير صالح');return}
-  reviews.unshift({id:Date.now(),name,place:fPlace.value,rate,text,imgs,yt,vid:vidUrl,time:Date.now(),cmts:[]});
-  // لا يُحفظ رابط الفيديو المحلي لأنه مؤقت
-  const toSave=reviews.map(r=>({...r,vid:''}));set('reviews',JSON.stringify(toSave))||toast('امتلأت مساحة التخزين');
-  fName.value=fText.value=fYt.value='';fImg.value=fVid.value='';prev.innerHTML='';imgs=[];vidUrl='';rate=0;[...stars.children].forEach(x=>x.classList.remove('on'));
-  toast('تم نشر تقييمك');render()};
+/* ---- قراءة الآراء من Firestore (مباشر) ---- */
+let seeded = false;
+onSnapshot(query(collection(db, 'reviews'), orderBy('createdAt', 'desc')), snap => {
+  reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  render();
+  // أول مرة فقط: إضافة تقييمين تجريبيين إذا كانت القاعدة فاضية
+  if (snap.empty && !seeded) {
+    seeded = true;
+    setDoc(doc(db, 'reviews', 'seed1'), { name: 'ليلى', place: 'وادي رم', rate: 5, text: 'ليلة تخييم لا تُنسى. السماء صافية والدليل البدوي كان رائعاً.', imgs: [], yt: '', cmts: [{ name: 'سامر', text: 'أي مخيم نصحتِ به؟' }], createdAt: serverTimestamp() }).catch(console.error);
+    setDoc(doc(db, 'reviews', 'seed2'), { name: 'أحمد', place: 'البتراء', rate: 4, text: 'يفضّل الوصول قبل الثامنة صباحاً لتفادي الازدحام والحر.', imgs: [], yt: '', cmts: [], createdAt: serverTimestamp() }).catch(console.error);
+  }
+}, err => { console.error(err); toast('تعذّر الاتصال بقاعدة البيانات'); });
 
-list.onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;
-  const card=b.closest('.review'),n=card.querySelector('.cn').value.trim(),t=card.querySelector('.ct').value.trim();
-  if(!n||!t){toast('أدخل اسمك والتعليق');return}
-  reviews.find(r=>r.id==card.dataset.id).cmts.push({name:n,text:t});
-  set('reviews',JSON.stringify(reviews.map(r=>({...r,vid:''}))));render()};
-render();
+/* ---- نشر تقييم ---- */
+$('post').onclick = async () => {
+  const name = $('fName').value.trim(), text = $('fText').value.trim();
+  if (!name || !text || !rate) { toast('أدخل الاسم والتقييم ونص التجربة'); return; }
+  const yt = ytId($('fYt').value);
+  if ($('fYt').value && !yt) { toast('رابط يوتيوب غير صالح'); return; }
+  if (imgs.join('').length > 800000) { toast('الصور كبيرة، اختر صوراً أقل'); return; }
+  const btn = $('post'); btn.disabled = true;
+  try {
+    const ref = await addDoc(collection(db, 'reviews'), {
+      name, place: $('fPlace').value, rate, text, imgs, yt, cmts: [], createdAt: serverTimestamp()
+    });
+    if (vidUrl) sessionVids[ref.id] = vidUrl;
+    $('fName').value = $('fText').value = $('fYt').value = '';
+    $('fImg').value = $('fVid').value = ''; $('prev').innerHTML = '';
+    imgs = []; vidUrl = ''; rate = 0;
+    [...stars.children].forEach(x => x.classList.remove('on'));
+    toast('تم نشر تقييمك'); render();
+  } catch (err) {
+    console.error(err); toast('تعذّر نشر التقييم، حاول مرة ثانية');
+  }
+  btn.disabled = false;
+};
+
+/* ---- إضافة تعليق ---- */
+$('list').onclick = async e => {
+  const b = e.target.closest('[data-c]'); if (!b) return;
+  const card = b.closest('.review');
+  const n = card.querySelector('.cn').value.trim(), t = card.querySelector('.ct').value.trim();
+  if (!n || !t) { toast('أدخل اسمك والتعليق'); return; }
+  try {
+    await updateDoc(doc(db, 'reviews', card.dataset.id), { cmts: arrayUnion({ name: n, text: t }) });
+  } catch (err) { console.error(err); toast('تعذّر إضافة التعليق'); }
+};
 </script>
 </body>
 </html>

@@ -52,14 +52,17 @@
 <div id="toast" role="status"></div>
 
 <script src="script.js"></script>
-<script>
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, increment }
+  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 const cats = ['الكل', 'مغامرات', 'تاريخ وآثار', 'تصوير', 'طعام وثقافة', 'عائلات'];
-let groups = window.DARB_GROUPS.slice();
-let joined = new Set(JSON.parse(safeGet('joined') || '[]'));
-let extra = JSON.parse(safeGet('extra') || '[]');
-groups = groups.concat(extra);
+const baseGroups = window.DARB_GROUPS.map(g => ({ ...g, id: String(g.id) }));
+let extra = [];
+let groups = baseGroups.slice();
+let joined = new Set(JSON.parse(safeGet('joined') || '[]').map(String));
 let filter = 'الكل';
-let nextId = 100 + extra.length;
 
 function safeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function safeSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -78,40 +81,63 @@ function renderFilters() {
 function render() {
   const list = groups.filter(g => filter === 'الكل' || g.cat === filter);
   document.getElementById('grid').innerHTML = list.length ? list.map(g => {
-    const on = joined.has(g.id), count = g.members + (on ? 1 : 0);
+    const on = joined.has(g.id);
+    const count = g.fromDb ? g.members : g.members + (on ? 1 : 0);
     return `<article class="card group">
       <div class="group-top"><div class="ico" aria-hidden="true">${g.icon}</div>
         <div><h3>${esc(g.name)}</h3><span class="tag">${esc(g.cat)}</span></div></div>
       <p>${esc(g.desc)}</p>
       <div class="meta"><span>👥 ${count.toLocaleString('ar-JO')} عضو</span></div>
-      ${on ? `<button type="button" class="btn joined" data-id="${g.id}">✓ أنت عضو — غادر المجموعة</button>` : `<a class="btn" style="text-align:center;text-decoration:none" href="join.html?g=${g.id}">انضم للمجموعة</a>`}
+      ${on ? `<button type="button" class="btn joined" data-id="${esc(g.id)}">✓ أنت عضو — غادر المجموعة</button>` : `<a class="btn" style="text-align:center;text-decoration:none" href="join.html?g=${encodeURIComponent(g.id)}">انضم للمجموعة</a>`}
     </article>`;
   }).join('') : '<p class="empty">لا توجد مجموعات في هذا التصنيف بعد. أنشئ أول مجموعة أدناه.</p>';
   document.getElementById('statGroups').textContent = groups.length.toLocaleString('ar-JO');
-  document.getElementById('statMembers').textContent = groups.reduce((s, g) => s + g.members + (joined.has(g.id) ? 1 : 0), 0).toLocaleString('ar-JO');
+  document.getElementById('statMembers').textContent = groups.reduce((s, g) => s + (g.fromDb ? g.members : g.members + (joined.has(g.id) ? 1 : 0)), 0).toLocaleString('ar-JO');
   document.getElementById('statJoined').textContent = joined.size.toLocaleString('ar-JO');
 }
+
+/* قراءة المجموعات من Firestore (تتحدث مباشرة عند أي تغيير) */
+onSnapshot(query(collection(db, 'groups'), orderBy('createdAt', 'desc')), snap => {
+  extra = snap.docs.map(d => ({ id: d.id, icon: '🧭', fromDb: true, ...d.data() }));
+  groups = baseGroups.concat(extra);
+  render();
+}, err => { console.error(err); toast('تعذّر الاتصال بقاعدة البيانات'); });
 
 document.getElementById('filters').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
   filter = b.dataset.cat; renderFilters(); render();
 });
-document.getElementById('grid').addEventListener('click', e => {
+
+document.getElementById('grid').addEventListener('click', async e => {
   const b = e.target.closest('.btn[data-id]'); if (!b) return;
-  const id = +b.dataset.id;
-  if (joined.has(id)) { joined.delete(id); toast('غادرت المجموعة'); }
-  else { joined.add(id); }
-  safeSet('joined', JSON.stringify([...joined])); render();
+  const id = b.dataset.id;
+  if (joined.has(id)) {
+    joined.delete(id);
+    safeSet('joined', JSON.stringify([...joined]));
+    toast('غادرت المجموعة');
+    if (groups.find(g => g.id === id && g.fromDb)) {
+      try { await updateDoc(doc(db, 'groups', id), { members: increment(-1) }); } catch (err) { console.error(err); }
+    }
+    render();
+  }
 });
-document.getElementById('addBtn').addEventListener('click', () => {
+
+document.getElementById('addBtn').addEventListener('click', async () => {
   const name = document.getElementById('gName').value.trim();
   const desc = document.getElementById('gDesc').value.trim();
   if (!name || !desc) { toast('أدخل اسم المجموعة ووصفاً قصيراً'); return; }
-  const g = { id: nextId++, icon: '🧭', name, cat: document.getElementById('gCat').value, desc, members: 1 };
-  extra.push(g); groups.push(g); joined.add(g.id);
-  safeSet('extra', JSON.stringify(extra)); safeSet('joined', JSON.stringify([...joined]));
-  document.getElementById('gName').value = ''; document.getElementById('gDesc').value = '';
-  toast('تم إنشاء المجموعة وانضممت إليها'); render();
+  const btn = document.getElementById('addBtn'); btn.disabled = true;
+  try {
+    const ref = await addDoc(collection(db, 'groups'), {
+      name, desc, cat: document.getElementById('gCat').value, members: 1, createdAt: serverTimestamp()
+    });
+    joined.add(ref.id); safeSet('joined', JSON.stringify([...joined]));
+    document.getElementById('gName').value = ''; document.getElementById('gDesc').value = '';
+    toast('تم إنشاء المجموعة وانضممت إليها'); render();
+  } catch (err) {
+    console.error(err); toast('تعذّر حفظ المجموعة، حاول مرة ثانية');
+  }
+  btn.disabled = false;
 });
 
 renderFilters(); render();

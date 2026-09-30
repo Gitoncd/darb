@@ -36,28 +36,57 @@
 </main>
 <div id="toast" role="status"></div>
 <script src="script.js"></script>
-<script>
-const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
-const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
-const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2400)}
-const base=window.DARB_GROUPS.map(g=>[g.id,g.name]);
-const extra=JSON.parse(get('extra')||'[]').map(x=>[x.id,x.name]);
-const all=base.concat(extra);
-const sel=document.getElementById('g');
-sel.innerHTML=all.map(([i,n])=>`<option value="${i}">${esc(n)}</option>`).join('');
-const want=new URLSearchParams(location.search).get('g');
-if(want&&all.some(x=>x[0]==want))sel.value=want;
-document.getElementById('go').onclick=()=>{
-  const n=document.getElementById('n').value.trim(),e=document.getElementById('e').value.trim();
-  if(!n){toast('أدخل اسمك');return}
-  if(!/^\S+@\S+\.\S+$/.test(e)){toast('أدخل بريداً إلكترونياً صحيحاً');return}
-  if(!document.getElementById('a').checked){toast('يجب الموافقة على قواعد المجموعة');return}
-  const id=+sel.value,name=sel.options[sel.selectedIndex].text;
-  const joined=new Set(JSON.parse(get('joined')||'[]'));joined.add(id);set('joined',JSON.stringify([...joined]));
-  const reqs=JSON.parse(get('requests')||'[]');
-  reqs.push({group:id,name:n,email:e,phone:document.getElementById("p").value,level:document.getElementById("l").value,msg:document.getElementById("m").value,time:Date.now()});set('requests',JSON.stringify(reqs));
-  document.getElementById('box').innerHTML=`<div class="ok"><div class="big">🎉</div><h2>أهلاً بك يا ${esc(n)}</h2><p>تم انضمامك إلى «${esc(name)}».</p><a class="btn" href="community.html">العودة إلى المجموعات</a><a class="btn accent" href="feedback.html">شارك تجربتك</a></div>`};
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, addDoc, getDocs, doc, updateDoc, increment, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const set = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400); }
+
+const base = window.DARB_GROUPS.map(g => [String(g.id), g.name, false]);
+let all = base.slice();
+let chosen = new URLSearchParams(location.search).get('g');
+const sel = document.getElementById('g');
+sel.addEventListener('change', () => { chosen = sel.value; });
+
+function fill() {
+  sel.innerHTML = all.map(([i, n]) => `<option value="${esc(i)}">${esc(n)}</option>`).join('');
+  if (chosen && all.some(x => x[0] === chosen)) sel.value = chosen;
+}
+fill();
+
+getDocs(collection(db, 'groups')).then(snap => {
+  all = base.concat(snap.docs.map(d => [d.id, d.data().name, true]));
+  fill();
+}).catch(console.error);
+
+document.getElementById('go').onclick = async () => {
+  const n = document.getElementById('n').value.trim(), e = document.getElementById('e').value.trim();
+  if (!n) { toast('أدخل اسمك'); return; }
+  if (!/^\S+@\S+\.\S+$/.test(e)) { toast('أدخل بريداً إلكترونياً صحيحاً'); return; }
+  if (!document.getElementById('a').checked) { toast('يجب الموافقة على قواعد المجموعة'); return; }
+  const id = sel.value, name = sel.options[sel.selectedIndex].text;
+  const isDb = (all.find(x => x[0] === id) || [])[2];
+  const btn = document.getElementById('go'); btn.disabled = true;
+  try {
+    await addDoc(collection(db, 'joinRequests'), {
+      groupId: id, groupName: name, name: n, email: e,
+      phone: document.getElementById('p').value,
+      level: document.getElementById('l').value,
+      message: document.getElementById('m').value,
+      createdAt: serverTimestamp()
+    });
+    if (isDb) await updateDoc(doc(db, 'groups', id), { members: increment(1) });
+    const joined = new Set(JSON.parse(get('joined') || '[]').map(String)); joined.add(id);
+    set('joined', JSON.stringify([...joined]));
+    document.getElementById('box').innerHTML = `<div class="ok"><div class="big">🎉</div><h2>أهلاً بك يا ${esc(n)}</h2><p>تم انضمامك إلى «${esc(name)}».</p><a class="btn" href="community.html">العودة إلى المجموعات</a><a class="btn accent" href="feedback.html">شارك تجربتك</a></div>`;
+  } catch (err) {
+    console.error(err); toast('تعذّر إرسال الطلب، حاول مرة ثانية'); btn.disabled = false;
+  }
+};
 </script>
 </body>
 </html>
