@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>المجتمع والمجموعات السياحية | دَرْب</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">دَرْب <span>Darb</span></a>
+  <button class="menu-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+  <nav aria-label="القائمة الرئيسية"><ul><li><a href="index.html">الرئيسية</a></li><li><a href="explore.html">استكشف</a></li><li><a href="trips.html">الرحلات</a></li><li><a href="match.html">اكتشف مجموعتك</a></li><li><a href="community.html" class="active" aria-current="page">المجتمع</a></li><li><a href="feedback.html">آراء الزوار</a></li></ul></nav>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <h1>سافر مع أناس يحبون الأردن مثلك</h1>
+    <p>انضم إلى مجموعة تناسب اهتمامك، وشارك رحلاتك ونصائحك مع مسافرين آخرين.</p>
+    <div class="stats">
+      <div><b id="statGroups">0</b><small>مجموعة</small></div>
+      <div><b id="statMembers">0</b><small>عضو</small></div>
+      <div><b id="statJoined">0</b><small>مجموعاتك</small></div>
+    </div>
+  </section>
+
+  <div class="filters" id="filters" role="group" aria-label="تصفية المجموعات"></div>
+  <section class="grid" id="grid" aria-live="polite"></section>
+
+  <section class="card create" aria-labelledby="createTitle">
+    <h2 id="createTitle">لم تجد مجموعتك؟ أنشئ واحدة</h2>
+    <p>اقترح مجموعة جديدة وسيراها الزوار فوراً.</p>
+    <div class="form">
+      <div>
+        <label for="gName">اسم المجموعة</label>
+        <input id="gName" maxlength="40" placeholder="مثال: عشاق التخييم في وادي رم">
+      </div>
+      <div>
+        <label for="gCat">التصنيف</label>
+        <select id="gCat"></select>
+      </div>
+      <div class="full">
+        <label for="gDesc">وصف قصير</label>
+        <textarea id="gDesc" rows="2" maxlength="120" placeholder="عن ماذا تدور المجموعة؟"></textarea>
+      </div>
+      <div class="full"><button class="btn accent" id="addBtn" type="button">إنشاء المجموعة</button></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" role="status"></div>
+
+<script src="script.js"></script>
+<script>
+const cats = ['الكل', 'مغامرات', 'تاريخ وآثار', 'تصوير', 'طعام وثقافة', 'عائلات'];
+let groups = window.DARB_GROUPS.slice();
+let joined = new Set(JSON.parse(safeGet('joined') || '[]'));
+let extra = JSON.parse(safeGet('extra') || '[]');
+groups = groups.concat(extra);
+let filter = 'الكل';
+let nextId = 100 + extra.length;
+
+function safeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function safeSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function renderFilters() {
+  document.getElementById('filters').innerHTML = cats.map(c =>
+    `<button class="chip ${c === filter ? 'on' : ''}" data-cat="${c}" aria-pressed="${c === filter}">${c}</button>`).join('');
+  document.getElementById('gCat').innerHTML = cats.slice(1).map(c => `<option>${c}</option>`).join('');
+}
+
+function render() {
+  const list = groups.filter(g => filter === 'الكل' || g.cat === filter);
+  document.getElementById('grid').innerHTML = list.length ? list.map(g => {
+    const on = joined.has(g.id), count = g.members + (on ? 1 : 0);
+    return `<article class="card group">
+      <div class="group-top"><div class="ico" aria-hidden="true">${g.icon}</div>
+        <div><h3>${esc(g.name)}</h3><span class="tag">${esc(g.cat)}</span></div></div>
+      <p>${esc(g.desc)}</p>
+      <div class="meta"><span>👥 ${count.toLocaleString('ar-JO')} عضو</span></div>
+      ${on ? `<button type="button" class="btn joined" data-id="${g.id}">✓ أنت عضو — غادر المجموعة</button>` : `<a class="btn" style="text-align:center;text-decoration:none" href="join.html?g=${g.id}">انضم للمجموعة</a>`}
+    </article>`;
+  }).join('') : '<p class="empty">لا توجد مجموعات في هذا التصنيف بعد. أنشئ أول مجموعة أدناه.</p>';
+  document.getElementById('statGroups').textContent = groups.length.toLocaleString('ar-JO');
+  document.getElementById('statMembers').textContent = groups.reduce((s, g) => s + g.members + (joined.has(g.id) ? 1 : 0), 0).toLocaleString('ar-JO');
+  document.getElementById('statJoined').textContent = joined.size.toLocaleString('ar-JO');
+}
+
+document.getElementById('filters').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  filter = b.dataset.cat; renderFilters(); render();
+});
+document.getElementById('grid').addEventListener('click', e => {
+  const b = e.target.closest('.btn[data-id]'); if (!b) return;
+  const id = +b.dataset.id;
+  if (joined.has(id)) { joined.delete(id); toast('غادرت المجموعة'); }
+  else { joined.add(id); }
+  safeSet('joined', JSON.stringify([...joined])); render();
+});
+document.getElementById('addBtn').addEventListener('click', () => {
+  const name = document.getElementById('gName').value.trim();
+  const desc = document.getElementById('gDesc').value.trim();
+  if (!name || !desc) { toast('أدخل اسم المجموعة ووصفاً قصيراً'); return; }
+  const g = { id: nextId++, icon: '🧭', name, cat: document.getElementById('gCat').value, desc, members: 1 };
+  extra.push(g); groups.push(g); joined.add(g.id);
+  safeSet('extra', JSON.stringify(extra)); safeSet('joined', JSON.stringify([...joined]));
+  document.getElementById('gName').value = ''; document.getElementById('gDesc').value = '';
+  toast('تم إنشاء المجموعة وانضممت إليها'); render();
+});
+
+renderFilters(); render();
+</script>
+</body>
+</html>

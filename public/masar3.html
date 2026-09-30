@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مسارات دَرب | مسار وسط البلد عَمّان</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <header>
+  <a href="index.html" class="logo">دَرْب <span>Darb</span></a>
+  <button class="menu-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+  <nav aria-label="القائمة الرئيسية"><ul><li><a href="index.html">الرئيسية</a></li><li><a href="explore.html">استكشف</a></li><li><a href="trips.html" class="active" aria-current="page">الرحلات</a></li><li><a href="match.html">اكتشف مجموعتك</a></li><li><a href="community.html">المجتمع</a></li><li><a href="feedback.html">آراء الزوار</a></li></ul></nav>
+</header>
+
+  <section class="hero-trip hero-amman">
+    <span class="trip-badge">جولة حضرية وتراثية</span>
+    <h1>مسار نَبض العاصمة: وسط البلد وجبل عمان</h1>
+    <p>رحلة يوم واحد - 24 أكتوبر 2026</p>
+  </section>
+
+  <main class="container">
+    <section class="interactive-section">
+      <div class="card">
+        <h2>🗺️ الخريطة التفاعلية للمسار</h2>
+        <div id="map"></div>
+      </div>
+
+      <div class="card weather-card" id="weather-widget">
+      </div>
+    </section>
+
+    <section class="itinerary-section">
+      <h2 style="color: var(--primary-color); margin-bottom: 20px;">📅 برنامج الرحلة التفصيلي</h2>
+
+      <div class="day-block">
+        <div class="day-header">برنامج الجولة الحضرية</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="time-tag">09:00 صباحاً</div>
+            <h3>جولة جبل القلعة</h3>
+            <p>زيارة معبد هرقل، القصر الأموي، والمتحف الوطني للآثار.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">11:30 صباحاً</div>
+            <h3>المدرج الروماني وسوق البخارية</h3>
+            <p>النزول إلى المدرج الروماني والتجول في الأسواق القديمة والتراثية.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">01:30 ظهراً</div>
+            <h3>تذوق الكنافة والمأكولات الشعبية</h3>
+            <p>استراحة غداء وتذوق الحلويات الشعبية الشهيرة في وسط البلد.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">03:30 مساءً</div>
+            <h3>درج الكلحة وشارع الرينبو</h3>
+            <p>الصعود عبر الأدراج الملونة نحو شارع الرينبو واستكشاف المعارض والمقاهي.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">06:00 مساءً</div>
+            <h3>ختام الجولة</h3>
+            <p>الاستمتاع بمنظر الغروب فوق تلال عمان وتوديع المشاركين.</p>
+          </div>
+        </div>
+      </div>
+
+      </section>
+    <div class="action-box">
+  <a href="booking.html?trip=3" class="btn-book">احجز مقعدك الآن</a>
+</div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderWeather('trip3');
+      initTripMap('trip3');
+    });
+  </script>
+</body>
+</html>

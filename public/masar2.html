@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مسارات دَرب | مسار مأدبا وجبل نيبو</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <header>
+  <a href="index.html" class="logo">دَرْب <span>Darb</span></a>
+  <button class="menu-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+  <nav aria-label="القائمة الرئيسية"><ul><li><a href="index.html">الرئيسية</a></li><li><a href="explore.html">استكشف</a></li><li><a href="trips.html" class="active" aria-current="page">الرحلات</a></li><li><a href="match.html">اكتشف مجموعتك</a></li><li><a href="community.html">المجتمع</a></li><li><a href="feedback.html">آراء الزوار</a></li></ul></nav>
+</header>
+
+  <section class="hero-trip hero-madaba">
+    <span class="trip-badge">رحلة تاريخية ودينية</span>
+    <h1>مسار التاريخ والفسيفساء: مأدبا والمغطس</h1>
+    <p>رحلة يوم واحد - 20 أكتوبر 2026</p>
+  </section>
+
+  <main class="container">
+    <section class="interactive-section">
+      <div class="card">
+        <h2>🗺️ الخريطة التفاعلية للمسار</h2>
+        <div id="map"></div>
+      </div>
+
+      <div class="card weather-card" id="weather-widget">
+      </div>
+    </section>
+
+    <section class="itinerary-section">
+      <h2 style="color: var(--primary-color); margin-bottom: 20px;">📅 برنامج الرحلة التفصيلي</h2>
+
+      <div class="day-block">
+        <div class="day-header">برنامج اليوم الكامل</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="time-tag">08:00 صباحاً</div>
+            <h3>الانطلاق من عمان</h3>
+            <p>التجمع والانطلاق نحو منطقة المغطس (موقع المعمودية).</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">09:30 صباحاً</div>
+            <h3>زيارة موقع المغطس</h3>
+            <p>جولة مع مرشد سياحي في موقع المعمودية ونهر الأردن ومحيطه التاريخي.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">12:30 ظهراً</div>
+            <h3>الصعود إلى جبل نيبو</h3>
+            <p>زيارة الكنيسة الأثرية ومشاهدة الإطلالة على أريحا والقدس.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">02:30 ظهراً</div>
+            <h3>وجبة الغداء في مأدبا</h3>
+            <p>تناول الطعام في مطعم مأدبا السياحي وتذوق المأكولات المحلية.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">04:00 مساءً</div>
+            <h3>خارطة مأدبا الفسيفسائية وكنيسة القديس جورج</h3>
+            <p>مشاهدة خارطة الأرض المقدسة الفسيفسائية والتجول بين مشاغل الفسيفساء الحرفية.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="time-tag">06:30 مساءً</div>
+            <h3>العودة إلى عمان</h3>
+            <p>اختتام الرحلة والعودة بنجاح.</p>
+          </div>
+        </div>
+      </div>
+
+      </section>
+    <div class="action-box">
+  <a href="booking.html?trip=2" class="btn-book">احجز مقعدك الآن</a>
+</div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderWeather('trip2');
+      initTripMap('trip2');
+    });
+  </script>
+</body>
+</html>

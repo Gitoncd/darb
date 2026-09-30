@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اكتشف | دَرْب</title>
+
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="darb-explore-page">
+
+  
+  <header>
+  <a href="index.html" class="logo">دَرْب <span>Darb</span></a>
+  <button class="menu-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+  <nav aria-label="القائمة الرئيسية"><ul><li><a href="index.html">الرئيسية</a></li><li><a href="explore.html" class="active" aria-current="page">استكشف</a></li><li><a href="trips.html">الرحلات</a></li><li><a href="match.html">اكتشف مجموعتك</a></li><li><a href="community.html">المجتمع</a></li><li><a href="feedback.html">آراء الزوار</a></li></ul></nav>
+</header>
+
+  <main class="darb-ex-wrap">
+
+   
+    <section class="darb-ex-masthead">
+      <div class="darb-ex-topline">
+        <span>العدد الأول</span>
+        <span>عمّان — الأردن</span>
+        <span id="darb-ex-today"></span>
+      </div>
+      <h1>جريدة دَرْب</h1>
+      <p class="darb-ex-slogan">كل ما تحتاج تعرفه عن الأردن... Tour Like a Local</p>
+    </section>
+
+    <!-- =========================================================
+         DARB EXPLORE — كاليندر الفعاليات
+    ========================================================= -->
+    <section class="darb-ex-section">
+      <h2 class="darb-ex-heading"><span>📅 فعاليات قادمة في الأردن</span></h2>
+
+      <div class="darb-ex-calendar-layout">
+
+        <!-- الكاليندر -->
+        <div class="darb-ex-calendar">
+          <div class="darb-ex-cal-head">
+            <button id="darb-ex-prev" aria-label="الشهر السابق">›</button>
+            <strong id="darb-ex-month-title"></strong>
+            <button id="darb-ex-next" aria-label="الشهر التالي">‹</button>
+          </div>
+          <div class="darb-ex-cal-days">
+            <span>الأحد</span><span>الإثنين</span><span>الثلاثاء</span>
+            <span>الأربعاء</span><span>الخميس</span><span>الجمعة</span><span>السبت</span>
+          </div>
+          <div class="darb-ex-cal-grid" id="darb-ex-grid"></div>
+        </div>
+
+        <!-- تفاصيل الفعالية + قائمة -->
+        <div class="darb-ex-events">
+          <div class="darb-ex-detail" id="darb-ex-detail">
+            اضغط على يوم فيه نقطة برتقالية لتشوف تفاصيل الفعالية 👆
+          </div>
+          <ul class="darb-ex-list" id="darb-ex-list"></ul>
+        </div>
+
+      </div>
+    </section>
+
+   
+    <section class="darb-ex-section">
+      <h2 class="darb-ex-heading"><span>📰 هل تعرف؟ عن الأردن</span></h2>
+
+      <div class="darb-ex-columns">
+
+        <article class="darb-ex-article">
+          <div class="darb-ex-emoji">🌸</div>
+          <h3>السوسنة السوداء</h3>
+          <p>
+            هي الزهرة الوطنية للأردن. لونها بنفسجي غامق يميل للأسود،
+            وتنمو برياً في ربيع مناطق مثل مرتفعات الكرك ومأدبا والسلط.
+            وهي من الأزهار المحمية.
+          </p>
+        </article>
+
+        <article class="darb-ex-article">
+          <div class="darb-ex-emoji">🐦</div>
+          <h3>طائر الأردن</h3>
+          <p>
+            هو الطائر الوطني للأردن، وله اسم آخر هو «الشُرشُور الأردني».
+            ذكره يتميز بلون وردي وأحمر، ويعيش في المرتفعات الصخرية
+            وفي مناطق قرب البتراء ووادي رم.
+          </p>
+        </article>
+
+        <article class="darb-ex-article">
+          <div class="darb-ex-emoji">🍛</div>
+          <h3>المنسف: الأكلة الوطنية</h3>
+          <p>
+            لحم الخروف مع جميد الكرك الأصفر والأرز، وبيتقدم عادةً في
+            الأفراح والمناسبات الكبيرة. وبجانبه أكلات شعبية مثل
+            المقلوبة والزرب والمسخن والكنافة النابلسية.
+          </p>
+        </article>
+
+        <article class="darb-ex-article">
+          <div class="darb-ex-emoji">🧣</div>
+          <h3>اللباس التقليدي</h3>
+          <p>
+            الحطة والعقال الأحمر والأبيض هي رمز الرجل الأردني.
+            أما المرأة فتلبس الثوب المطرز بالتطريز الفلاحي الجميل،
+            وكل منطقة لها ألوانها ونقشاتها.
+          </p>
+        </article>
+
+        <article class="darb-ex-article">
+          <div class="darb-ex-emoji">☕</div>
+          <h3>القهوة العربية والضيافة</h3>
+          <p>
+            القهوة السادة جزء أساسي من الكرم الأردني. بتنقدم للضيف
+            بالفنجان الصغير، وإذا هزّ الفنجان معناه اكتفى.
+          </p>
+        </article>
+
+        <article class="darb-ex-article">
+          <div class="darb-ex-emoji">💃</div>
+          <h3>التراث والدبكة</h3>
+          <p>
+            الدبكة من فنون الفرح الأردنية، إلى جانب الشعر
+            النبطي. والأردن فيه البتراء (إحدى عجائب الدنيا
+            السبع) ووادي رم والمغطس.
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+   
+    <section class="darb-ex-cta">
+      <h2>جاهز تعيشها بنفسك؟</h2>
+      <p>تصفّح مسارات دَرْب واختار رحلتك الجاية.</p>
+      <a href="trips.html" class="darb-ex-cta-btn">اكتشف المسارات ←</a>
+    </section>
+
+  </main>
+
+  
+  <script src="script.js"></script>
+  <script>
+    (function () {
+
+  
+      var events = [
+        {
+          date: "2026-10-02",
+          title: "اركض للأردن",
+          place: "عمّان",
+          desc: "فعالية جري مجتمعية للمشاركين من كل الأعمار."
+        },
+        {
+          date: "2026-10-17",   // ⚠️ تاريخ تقريبي: عدّليه
+          title: "مؤتمر Y2B",
+          place: "عمّان",
+          desc: "مؤتمر يجمع الشباب وروّاد الأعمال والمتحدثين الملهمين."
+        },
+        {
+          date: "2026-10-23",   // ⚠️ تاريخ تقريبي: عدّليه
+          title: "ماراثون عمّان",
+          place: "عمّان",
+          desc: "سباق الماراثون السنوي في العاصمة بمسافات مختلفة."
+        },
+        { date: "2026-10-15", title: "رحلة دَرْب: البترا ووادي رم", place: "الجنوب", desc: "رحلة يومين (15 – 16 أكتوبر). التفاصيل والحجز في صفحة الرحلات." },
+        { date: "2026-10-20", title: "رحلة دَرْب: مأدبا والمغطس", place: "مأدبا", desc: "رحلة يوم واحد. التفاصيل والحجز في صفحة الرحلات." },
+        { date: "2026-10-24", title: "رحلة دَرْب: وسط البلد وجبل عمان", place: "عمّان", desc: "جولة يوم واحد. التفاصيل والحجز في صفحة الرحلات." }
+      ];
+
+      var monthNames = ["كانون الثاني","شباط","آذار","نيسان","أيار","حزيران",
+                        "تموز","آب","أيلول","تشرين الأول","تشرين الثاني","كانون الأول"];
+
+     
+      var _t = new Date(), _k = fmt(_t.getFullYear(), _t.getMonth(), _t.getDate());
+      var upcoming = events.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; })
+        .filter(function (e) { return e.date >= _k; })[0] || events[0];
+      var current = new Date(+upcoming.date.slice(0, 4), +upcoming.date.slice(5, 7) - 1, 1);
+
+      var grid   = document.getElementById("darb-ex-grid");
+      var title  = document.getElementById("darb-ex-month-title");
+      var detail = document.getElementById("darb-ex-detail");
+      var list   = document.getElementById("darb-ex-list");
+
+      
+      function fmt(y, m, d) {
+        return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+      }
+
+      function showDetail(ev) {
+        detail.innerHTML =
+          "<strong>" + ev.title + "</strong>" +
+          "<span>📍 " + ev.place + " • 🗓️ " + ev.date + "</span>" +
+          "<p>" + ev.desc + "</p>";
+      }
+
+      
+      function renderCalendar() {
+        var y = current.getFullYear();
+        var m = current.getMonth();
+        title.textContent = monthNames[m] + " " + y;
+        grid.innerHTML = "";
+
+        var firstDay = new Date(y, m, 1).getDay();      // 0 = الأحد
+        var daysInMonth = new Date(y, m + 1, 0).getDate();
+
+        // خانات فاضية قبل أول يوم
+        for (var i = 0; i < firstDay; i++) {
+          grid.appendChild(document.createElement("span"));
+        }
+
+        for (var d = 1; d <= daysInMonth; d++) {
+          var key = fmt(y, m, d);
+          var ev = events.filter(function (e) { return e.date === key; })[0];
+          var cell = document.createElement("button");
+          cell.type = "button";
+          cell.className = "darb-ex-day" + (ev ? " has-event" : "");
+          cell.textContent = d;
+          if (ev) {
+            cell.title = ev.title;
+            cell.addEventListener("click", (function (e) {
+              return function () { showDetail(e); };
+            })(ev));
+          }
+          grid.appendChild(cell);
+        }
+      }
+
+      
+      function renderList() {
+        list.innerHTML = "";
+        events.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; })
+          .forEach(function (ev) {
+            var li = document.createElement("li");
+            var parts = ev.date.split("-");
+            li.innerHTML =
+              "<b>" + parseInt(parts[2], 10) + " " + monthNames[parseInt(parts[1], 10) - 1] + "</b>" +
+              "<span>" + ev.title + " — " + ev.place + "</span>";
+            li.addEventListener("click", function () { showDetail(ev); });
+            list.appendChild(li);
+          });
+      }
+
+      document.getElementById("darb-ex-prev").addEventListener("click", function () {
+        current = new Date(current.getFullYear(), current.getMonth() - 1, 1);
+        renderCalendar();
+      });
+      document.getElementById("darb-ex-next").addEventListener("click", function () {
+        current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+        renderCalendar();
+      });
+
+      renderCalendar();
+      renderList();
+      showDetail(upcoming);
+
+      // تاريخ اليوم في رأس الجريدة
+      var now = new Date();
+      document.getElementById("darb-ex-today").textContent =
+        now.getDate() + " " + monthNames[now.getMonth()] + " " + now.getFullYear();
+    })();
+  </script>
+</body>
+</html>

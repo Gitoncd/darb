@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الرحلات | دَرْب</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="darb-home-page">
+<header>
+  <a href="index.html" class="logo">دَرْب <span>Darb</span></a>
+  <button class="menu-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+  <nav aria-label="القائمة الرئيسية"><ul><li><a href="index.html">الرئيسية</a></li><li><a href="explore.html">استكشف</a></li><li><a href="trips.html" class="active" aria-current="page">الرحلات</a></li><li><a href="match.html">اكتشف مجموعتك</a></li><li><a href="community.html">المجتمع</a></li><li><a href="feedback.html">آراء الزوار</a></li></ul></nav>
+</header>
+<main class="container">
+  <div class="trips-bar"><h1>رحلات دَرْب القادمة</h1><a href="trips.html" class="btn-primary" id="all" hidden>عرض كل الرحلات</a></div>
+  <p id="filterNote" class="notice" hidden></p>
+  <section class="darb-home-trips" id="trips" style="margin-top:18px"></section>
+  <p id="none" class="card" hidden>لا توجد رحلات مطابقة لبحثك حالياً. جرّب كلمة أخرى أو <a href="trips.html">اعرض كل الرحلات</a>.</p>
+</main>
+<script src="script.js"></script>
+<script>
+const P=new URLSearchParams(location.search),q=(P.get('q')||'').trim(),d=P.get('date')||'',it=P.get('interest')||'';
+const names={hidden:'كنوز مخفية',nature:'طبيعة',history:'تاريخ',food:'أكل محلي',adventure:'مغامرة'};
+const list=Object.values(DARB_TRIPS).filter(t=>
+  (!q||(t.title+' '+t.kw).includes(q))&&(!d||(d>=t.start&&d<=t.end))&&(!it||t.ints.includes(it)));
+const box=document.getElementById('trips');
+box.innerHTML=list.map(t=>`<article class="darb-home-trip-card"><img src="${t.img}" alt="${t.title}" loading="lazy">
+ <div class="darb-home-trip-body"><span class="darb-home-tag">${t.badge}</span><h3>${t.title}</h3><span class="trip-date">🗓️ ${t.date}</span><p>${t.desc}</p>
+ <a class="btn-primary" href="${t.page}">التفاصيل</a></div></article>`).join('');
+document.getElementById('none').hidden=list.length>0;
+if(q||d||it){const n=document.getElementById('filterNote');n.hidden=false;document.getElementById('all').hidden=false;
+ n.textContent='نتائج البحث: '+[q&&('«'+q+'»'),d&&('تاريخ '+d),it&&names[it]].filter(Boolean).join(' • ');}
+</script>
+</body></html>

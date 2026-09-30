@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دَرْب | Tour Like a Local</title>
+
+ 
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="darb-home-page"> 
+
+
+ 
+  <header>
+  <a href="index.html" class="logo">دَرْب <span>Darb</span></a>
+  <button class="menu-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+  <nav aria-label="القائمة الرئيسية"><ul><li><a href="index.html" class="active" aria-current="page">الرئيسية</a></li><li><a href="explore.html">استكشف</a></li><li><a href="trips.html">الرحلات</a></li><li><a href="match.html">اكتشف مجموعتك</a></li><li><a href="community.html">المجتمع</a></li><li><a href="feedback.html">آراء الزوار</a></li></ul></nav>
+</header>
+
+  <main>
+
+   
+    <section class="hero-home">
+      <div class="hero-home-content">
+        <h1>اكتشف الأردن <em>بطريقة مختلفة</em></h1>
+        <p class="en-line">Darb — Tour Like a Local</p>
+        <p class="lead">
+          مش بس تزور الأردن... عِشها كأنك من أهلها.
+        </p>
+
+        <form class="mini-search" action="trips.html" method="get">
+          <input class="field-place" type="text" name="q" placeholder="وين حابب تروح؟ مثال: البترا، مأدبا، عمان..." aria-label="المكان">
+          <input class="field-date" type="date" name="date" aria-label="التاريخ">
+          <button type="submit">ابحث</button>
+        </form>
+
+       
+        <ul class="chips">
+          <li><a href="trips.html?interest=hidden">💎 كنوز مخفية</a></li>
+          <li><a href="trips.html?interest=nature">🌿 طبيعة</a></li>
+          <li><a href="trips.html?interest=history">🏛️ تاريخ</a></li>
+          <li><a href="trips.html?interest=food">🍽️ أكل محلي</a></li>
+          <li><a href="trips.html?interest=adventure">🧗 مغامرة</a></li>
+        </ul>
+      </div>
+    </section>
+
+   
+    <div class="container">
+      <section class="card darb-home-about">
+        <div class="about-grid">
+          <div>
+            <h2>ما هو دَرْب؟</h2>
+            <p>
+              <strong>دَرْب</strong> يعني «الطريق». منصّة تاخدك لأماكن في الأردن
+              ما بتلاقيها بالكتيّبات السياحية: كنوز مخفية، تجارب محلية،
+              ورحلات جماعية صغيرة مع ناس جدد.
+            </p>
+            <p>
+              مش بس تزور الأردن... <strong>عِشها كأنك من أهلها.</strong>
+            </p>
+            <a href="trips.html" class="btn-primary">تصفّح الرحلات ←</a>
+          </div>
+
+          <ul class="about-points">
+            <li><strong>💎 كنوز مخفية</strong> أماكن أصيلة بعيدة عن الزحمة</li>
+            <li><strong>🏡 تجارب محلية</strong> عيش الأردن مع أهله</li>
+            <li><strong>🤝 تعرّف على ناس جدد</strong> صداقات جديدة على الطريق</li>
+            <li><strong>🚌 رحلات جماعية</strong> مجموعات صغيرة ومنظّمة</li>
+          </ul>
+        </div>
+      </section>
+
+      
+      <section class="darb-home-row">
+
+        
+        <div class="card darb-home-group-card">
+          <span class="darb-home-tag">✨ ميزة دَرْب</span>
+          <h2>اكتشف مجموعتك</h2>
+          <p>
+            جاوب على 4 أسئلة بسيطة (العمر، الاهتمامات، الوقت، نوع الرحلة)
+            وبنرشّحلك مجموعات تناسبك مع نسبة توافق.
+          </p>
+          <a href="match.html" class="btn-primary">ابدأ الآن ←</a>
+        </div>
+
+        
+        <div class="card weather-card" id="weather-widget"></div>
+      </section>
+
+    
+
+            
+      <section class="darb-home-social">
+        <a href="https://instagram.com/" target="_blank" rel="noopener">📸 تابعنا على إنستغرام</a>
+        <a href="https://open.spotify.com/" target="_blank" rel="noopener">🎧 بلاي ليست الرحلات</a>
+      </section>
+
+    </div>
+  </main>
+
+  
+  <script src="script.js"></script>
+
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () { renderWeather("amman"); });
+  </script>
+</body>
+</html>

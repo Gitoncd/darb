@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اكتشف مجموعتك | دَرْب</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo">دَرْب <span>Darb</span></a>
+  <button class="menu-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+  <nav aria-label="القائمة الرئيسية"><ul><li><a href="index.html">الرئيسية</a></li><li><a href="explore.html">استكشف</a></li><li><a href="trips.html">الرحلات</a></li><li><a href="match.html" class="active" aria-current="page">اكتشف مجموعتك</a></li><li><a href="community.html">المجتمع</a></li><li><a href="feedback.html">آراء الزوار</a></li></ul></nav>
+</header>
+<main class="page">
+  <section class="hero"><h1>اكتشف مجموعتك</h1><p>جاوب على 4 أسئلة وسنرشّح لك المجموعات الأنسب مع نسبة توافق.</p></section>
+  <section class="card" id="quiz"><div class="form">
+    <div><label for="qa">العمر</label><select id="qa"><option value="0">18 – 25</option><option value="1">26 – 35</option><option value="2">36 – 50</option><option value="3">أكثر من 50</option></select></div>
+    <div><label for="qi">اهتمامك الرئيسي</label><select id="qi"></select></div>
+    <div><label for="qt">الوقت المناسب</label><select id="qt"><option value="weekend">نهاية الأسبوع</option><option value="weekday">أيام الأسبوع</option><option value="flex">مرن</option></select></div>
+    <div><label for="qy">نوع الرحلة</label><select id="qy"><option value="day">رحلة يوم واحد</option><option value="multi">رحلة عدة أيام</option><option value="walk">جولة مشي</option></select></div>
+    <div class="full"><button type="button" class="btn accent" id="run">اعرض المجموعات المناسبة</button></div>
+  </div></section>
+  <section class="grid" id="res" aria-live="polite" style="margin-top:24px"></section>
+</main>
+<script src="script.js"></script>
+<script>
+const cats=[...new Set(DARB_GROUPS.map(g=>g.cat))];
+document.getElementById('qi').innerHTML=cats.map(c=>`<option>${c}</option>`).join('');
+const has=(arr,v)=>arr?(arr.includes(v)?20:0):10;
+document.getElementById('run').onclick=()=>{
+  const a=+qa.value,t=qt.value,y=qy.value,i=qi.value;
+  let extra=[];try{extra=JSON.parse(localStorage.getItem('extra')||'[]')}catch(e){}
+  const top=DARB_GROUPS.concat(extra).map(g=>({g,s:(g.cat===i?40:0)+has(g.age,a)+(g.time&&!g.time.includes(t)&&t!=='flex'&&!g.time.includes('flex')?0:(g.time?20:10))+has(g.type,y)}))
+    .sort((x,z)=>z.s-x.s).slice(0,3);
+  res.innerHTML=top.map(({g,s})=>`<article class="card group"><div class="group-top"><div class="ico" aria-hidden="true">${g.icon||'🧭'}</div>
+   <div><h3></h3><span class="tag">${g.cat}</span></div></div><span class="darb-home-match" style="align-self:flex-start">توافق ${s}%</span>
+   <p></p><a class="btn" href="join.html?g=${g.id}">انضم للمجموعة</a></article>`).join('');
+  [...res.children].forEach((c,k)=>{c.querySelector('h3').textContent=top[k].g.name;c.querySelector('p').textContent=top[k].g.desc});
+  res.scrollIntoView({behavior:'smooth'});
+};
+</script>
+</body></html>
