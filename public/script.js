@@ -1,15 +1,15 @@
 /* ===== دَرْب — shared data & helpers ===== */
 window.DARB_TRIPS = {
   1: { page: 'masar1.html', key: 'trip1', title: 'سحر الجنوب: البترا ووادي رم', badge: 'رحلة ثقافية ومغامرة', date: '15 – 16 أكتوبر 2026', start: '2026-10-15', end: '2026-10-16',
-       img: 'https://images.unsplash.com/photo-1579606032822-2630737a3410?auto=format&fit=crop&w=800&q=70',
+       img: 'images/wadirum.jpg.jpg',
        desc: 'يومان بين المدينة الوردية وصحراء وادي رم، مع مبيت في مخيم بدوي.',
        kw: 'البترا وادي رم الجنوب صحراء مخيم', ints: ['history', 'nature', 'adventure', 'hidden'] },
   2: { page: 'masar2.html', key: 'trip2', title: 'التاريخ والفسيفساء: مأدبا والمغطس', badge: 'رحلة تاريخية ودينية', date: '20 أكتوبر 2026', start: '2026-10-20', end: '2026-10-20',
-       img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=70',
+       img: 'images/madaba.jpg.jpg',
        desc: 'يوم واحد بين موقع المغطس وجبل نيبو وخارطة مأدبا الفسيفسائية.',
        kw: 'مأدبا المغطس جبل نيبو فسيفساء', ints: ['history', 'hidden'] },
   3: { page: 'masar3.html', key: 'trip3', title: 'نَبض العاصمة: وسط البلد وجبل عمان', badge: 'جولة حضرية وتراثية', date: '24 أكتوبر 2026', start: '2026-10-24', end: '2026-10-24',
-       img: 'https://images.unsplash.com/photo-1627916607164-7b20241db935?auto=format&fit=crop&w=800&q=70',
+       img: 'images/amman.jpg.jpg',
        desc: 'جبل القلعة والمدرج الروماني والكنافة وشارع الرينبو في يوم واحد.',
        kw: 'عمان عمّان وسط البلد القلعة الرينبو كنافة', ints: ['history', 'food'] }
 };

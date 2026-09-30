@@ -136,6 +136,7 @@ nav a:hover::after, nav a.active::after {
 
 /* phones and small tablets: links collapse under the header */
 @media (max-width: 860px) {
+  body.trip-page { background-attachment: scroll !important; }
   header {
     flex-wrap: wrap;
   }
@@ -208,15 +209,25 @@ nav a:hover::after, nav a.active::after {
 }
 
 .hero-petra {
-  background-image: url('https://www.sarayanews.com/image.php?token=32332f9e025d95713a7275545e947c9e&size=');
+  background-image: url('images/wadirum.jpg.jpg');
+  background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .hero-madaba {
-  background-image: url('https://tse3.mm.bing.net/th/id/OIP.u9gLrNI-ydEfwaoC8qAX6gHaE6?r=0&rs=1&pid=ImgDetMain&o=7&rm=3');
+  background-image: url('images/madaba.jpg.jpg');
+  background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
 }
 
 .hero-amman {
-  background-image: url('https://crystal-magazine.com/images/News/1607595514.jpg');
+  background-image: url('images/amman.jpg.jpg');
+ background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
 }
 
 .hero-trip h1 {
@@ -1107,3 +1118,35 @@ main.page { width: min(1150px, 92%); margin: 0 auto; }
 .booking-card { max-width: 600px; margin: 40px auto; }
 .booking-card h2 { justify-content: center; }
 .notice { background: rgba(56,102,65,.08); border-radius: 10px; padding: 10px 14px; font-size: .9rem; }
+
+body.trip-page {
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+body.trip-petra {
+  background-image: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)), url('images/wadirum.jpg.jpg');
+}
+body.trip-madaba {
+  background-image: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)), url('images/madaba.jpg.jpg');
+}
+body.trip-amman {
+  background-image: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)), url('images/amman.jpg.jpg');
+}
+
+/* الـ hero يصير شفاف فوق نفس الخلفية */
+.trip-page .hero-trip {
+  background: none;
+  border-radius: 0;
+  overflow: visible;
+}
+.trip-page .hero-trip::before {
+  display: none;
+}
+
+/* عنوان البرنامج يصير أبيض عشان يبان فوق الصورة */
+.trip-page .itinerary-section > h2 {
+  color: #fff !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
