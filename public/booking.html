@@ -25,4 +25,54 @@
       <button type="submit" class="btn accent">إرسال طلب الحجز</button>
     </div></form>
   </div>
-<ؤ
+</main>
+<div id="toast" role="status"></div>
+<script src="script.js"></script>
+<script>
+/* تعبئة الرحلات: سكربت عادي منفصل، يشتغل حتى لو تعطل Firebase */
+(function () {
+  var sel = document.getElementById('trip');
+  sel.innerHTML = Object.keys(DARB_TRIPS).map(function (k) {
+    var t = DARB_TRIPS[k];
+    return '<option value="' + k + '">' + t.title + ' — ' + t.date + '</option>';
+  }).join('');
+  var want = new URLSearchParams(location.search).get('trip');
+  if (DARB_TRIPS[want]) sel.value = want;
+})();
+</script>
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, addDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const $ = id => document.getElementById(id);
+const sel = $('trip');
+
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400); }
+
+$('bf').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('fullname').value.trim(), ph = $('phone').value.trim().replace(/[\s-]/g, ''), em = $('email').value.trim();
+  if (name.split(/\s+/).length < 2) { toast('أدخل اسمك الكامل'); return; }
+  if (!/^07[789]\d{7}$/.test(ph)) { toast('أدخل رقم هاتف أردني صحيح (07XXXXXXXX)'); return; }
+  if (!/^\S+@\S+\.\S+$/.test(em)) { toast('أدخل بريداً إلكترونياً صحيحاً'); return; }
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, 'bookings'), {
+      tripId: sel.value,
+      tripTitle: DARB_TRIPS[sel.value].title,
+      name, phone: ph, email: em,
+      seats: +$('seats').value,
+      createdAt: serverTimestamp()
+    });
+    location.href = 'confirmation.html?trip=' + sel.value + '&seats=' + $('seats').value + '&name=' + encodeURIComponent(name);
+  } catch (err) {
+    console.error(err);
+    toast('تعذّر إرسال الحجز، حاول مرة ثانية');
+    btn.disabled = false;
+  }
+});
+</script>
+</body></html>
