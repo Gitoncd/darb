@@ -12,6 +12,10 @@
 .confirm-card p{color:#555;margin-bottom:20px;font-size:1.1rem}
 .whatsapp-box{background:#25D366;color:#fff;padding:15px 20px;border-radius:12px;display:inline-block;text-decoration:none;font-weight:700;margin-bottom:26px;transition:transform .2s}
 .whatsapp-box:hover{transform:translateY(-2px)}
+.info-box{text-align:right;background:#f4f8f4;border-radius:12px;padding:15px 18px;margin-bottom:16px}
+.info-box h3{color:var(--primary-color);margin-bottom:8px;font-size:1.1rem}
+.info-box ul{padding-right:20px;margin:0}
+.info-box p{font-size:1rem;margin:0}
 </style>
 </head>
 <body>
@@ -25,8 +29,11 @@
     <div class="check-icon" aria-hidden="true">✅</div>
     <h2>تم استلام طلب حجزك!</h2>
     <p id="sum">شكراً لك. سنتواصل معك قريباً لتأكيد الحجز.</p>
+    <div id="addonsBox" class="info-box" style="display:none"></div>
+<div id="dressBox" class="info-box"></div>
+<div id="bringBox" class="info-box"></div>
     <!-- TODO: استبدلوا الرابط برابط مجموعة الواتساب الحقيقي -->
-    <a href="https://chat.whatsapp.com/exampleGroupLink123" target="_blank" rel="noopener" class="whatsapp-box">💬 الانضمام لمجموعة الواتساب الخاصة بالرحلة</a>
+   <a id="wa" href="https://chat.whatsapp.com/exampleGroupLink123" target="_blank" rel="noopener" class="whatsapp-box">💬 الانضمام لمجموعة الواتساب الخاصة بالرحلة</a>
     <div><a href="index.html" class="btn-primary">العودة للصفحة الرئيسية</a></div>
   </div>
 </main>
@@ -34,5 +41,31 @@
 <script>
 const p=new URLSearchParams(location.search),t=DARB_TRIPS[p.get('trip')],n=(p.get('name')||'').trim();
 if(t)document.getElementById('sum').textContent='شكراً '+(n||'لك')+'. استلمنا طلب حجز '+(+p.get('seats')||1)+' مقعد في «'+t.title+'» ('+t.date+'). سنتواصل معك لتأكيد الحجز وطريقة الدفع.';
+const num=(p.get('trip')||'').replace(/\D/g,'')||'1';
+const addons=(p.get('addons')||'').split(',').filter(Boolean);
+const addonNames={guide:'🧭 مرشد سياحي',photo:'📸 مصور',car:'🚗 سيارة خاصة'};
+
+const info={
+ '1':{dress:'ملابس مريحة للمشي، قبعة ونظارة شمسية نهاراً، وجاكيت دافئ لليل الصحراء.',
+      bring:['حذاء مشي مريح','ماء وواقي شمس','جاكيت دافئ للمساء','هاتف مشحون','هويتك أو جواز السفر','نقود للمشتريات الصغيرة']},
+ '2':{dress:'لباس محتشم لأنها مواقع دينية: أكتاف وركبتان مغطاة، وحذاء مريح.',
+      bring:['وشاح أو شال خفيف','ماء وقبعة','حذاء مريح للمشي','هويتك أو جواز السفر','نقود للمشاغل والمطاعم','هاتف مشحون']},
+ '3':{dress:'ملابس خفيفة ومريحة وحذاء مناسب للأدراج والمشي، مع قبعة للشمس.',
+      bring:['حذاء مريح للمشي','ماء وواقي شمس','نقود للكنافة والمقاهي','هاتف مشحون','حقيبة صغيرة خفيفة']}
+};
+const d=info[num]||info['1'];
+document.getElementById('dressBox').innerHTML='<h3>👗 ماذا ألبس؟</h3><p>'+d.dress+'</p>';
+document.getElementById('bringBox').innerHTML='<h3>🎒 ماذا أحتاج؟</h3><ul>'+d.bring.map(function(i){return '<li>'+i+'</li>'}).join('')+'</ul>';
+
+const chosen=addons.filter(function(a){return addonNames[a]});
+if(chosen.length){
+  const box=document.getElementById('addonsBox');
+  box.style.display='block';
+  box.innerHTML='<h3>✅ إضافاتك</h3><ul>'+chosen.map(function(a){return '<li>'+addonNames[a]+'</li>'}).join('')+'</ul>';
+}
+
+/* روابط واتساب: استبدلوا REPLACE بروابط مجموعات حقيقية */
+const wa={'1':'REPLACE','2':'REPLACE','3':'REPLACE'};
+if(wa[num]&&wa[num]!=='REPLACE')document.getElementById('wa').href=wa[num];
 </script>
 </body></html>

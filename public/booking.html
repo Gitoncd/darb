@@ -22,6 +22,18 @@
       <div><label for="email">البريد الإلكتروني</label><input type="email" id="email" dir="ltr" placeholder="example@domain.com" autocomplete="email" required></div>
       <div><label for="seats">عدد المقاعد</label><select id="seats"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
       <p class="notice">سنتواصل معك عبر الهاتف أو الواتساب لتأكيد الحجز وطريقة الدفع. لا تُدخل بيانات بطاقة الائتمان هنا.</p>
+      <div>
+  <label>إضافات للرحلة (اختياري)</label>
+  <label style="display:flex;align-items:center;gap:10px;font-weight:400;margin-bottom:6px">
+    <input type="checkbox" class="addon" value="guide" data-price="15" style="width:auto;margin:0"> 🧭 مرشد سياحي (+15 د.أ)
+  </label>
+  <label style="display:flex;align-items:center;gap:10px;font-weight:400;margin-bottom:6px">
+    <input type="checkbox" class="addon" value="photo" data-price="20" style="width:auto;margin:0"> 📸 مصور (+20 د.أ)
+  </label>
+  <label style="display:flex;align-items:center;gap:10px;font-weight:400;margin-bottom:6px">
+    <input type="checkbox" class="addon" value="car" data-price="25" style="width:auto;margin:0"> 🚗 سيارة خاصة (+25 د.أ)
+  </label>
+</div>
       <button type="submit" class="btn accent">إرسال طلب الحجز</button>
     </div></form>
   </div>
@@ -47,6 +59,8 @@ import { collection, addDoc, serverTimestamp }
 
 const $ = id => document.getElementById(id);
 const sel = $('trip');
+const boxes = document.querySelectorAll('.addon');
+
 
 function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400); }
 
@@ -58,6 +72,9 @@ $('bf').addEventListener('submit', async e => {
   if (!/^\S+@\S+\.\S+$/.test(em)) { toast('أدخل بريداً إلكترونياً صحيحاً'); return; }
 
   const btn = e.target.querySelector('button[type="submit"]');
+  const picked = [...boxes].filter(b => b.checked);
+const addons = picked.map(b => b.value);
+const addonsTotal = picked.reduce((s, b) => s + +b.dataset.price, 0);
   btn.disabled = true;
   try {
     await addDoc(collection(db, 'bookings'), {
@@ -65,9 +82,10 @@ $('bf').addEventListener('submit', async e => {
       tripTitle: DARB_TRIPS[sel.value].title,
       name, phone: ph, email: em,
       seats: +$('seats').value,
+      addons, addonsTotal,
       createdAt: serverTimestamp()
     });
-    location.href = 'confirmation.html?trip=' + sel.value + '&seats=' + $('seats').value + '&name=' + encodeURIComponent(name);
+    location.href = 'confirmation.html?trip=' + sel.value + '&seats=' + $('seats').value + '&name=' + encodeURIComponent(name) + '&addons=' + addons.join(',');
   } catch (err) {
     console.error(err);
     toast('تعذّر إرسال الحجز، حاول مرة ثانية');
